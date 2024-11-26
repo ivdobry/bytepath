@@ -1,5 +1,6 @@
 Object = require 'libraries/classic/classic'
 Timer = require 'libraries/enhanced_timer/EnhancedTimer'
+Camera = require 'libraries/hump/camera'
 Input = require 'libraries/boipushy/Input'
 fn = require 'libraries/moses/moses'
 
@@ -7,6 +8,9 @@ require 'GameObject'
 require 'utils'
 
 function love.load()
+    love.graphics.setDefaultFilter("nearest", "nearest")
+    love.graphics.setLineStyle("rough")
+
     local object_files = {}
     recursiveEnumerate('objects', object_files)
     requireFiles(object_files)
@@ -14,12 +18,18 @@ function love.load()
     recursiveEnumerate('rooms', room_files)
     requireFiles(room_files)
 
+    input = Input()
+    camera = Camera()
+
     current_room = nil
 
     gotoRoom('Stage')
+    resize(3)
 end
 
 function love.update(dx)
+    camera:update(dx)
+
     if current_room then
         current_room:update(dx)
     end
@@ -58,4 +68,9 @@ end
 
 function gotoRoom(room_type, ...)
     current_room = _G[room_type](...)
+end
+
+function resize(s)
+    love.window.setMode(s * gw, s * gh)
+    sx, sy = s, s
 end
