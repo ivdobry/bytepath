@@ -25,3 +25,15 @@ function Area:addGameObject(game_object_type, x, y, opts)
     table.insert(self.game_objects, game_object)
     return game_object
 end
+
+function Area:getGameObjects(filter)
+    filteredObjects = {}
+
+    for _, game_object in ipairs(self.game_objects) do
+        if filter(game_object) then
+            table.insert(filteredObjects, game_object)
+        end
+    end
+
+    return filteredObjects
+end
