@@ -3,6 +3,9 @@ Timer = require 'libraries/enhanced_timer/EnhancedTimer'
 Input = require 'libraries/boipushy/Input'
 fn = require 'libraries/moses/moses'
 
+require 'GameObject'
+require 'utils'
+
 function love.load()
     local object_files = {}
     recursiveEnumerate('objects', object_files)
@@ -20,25 +23,16 @@ function love.update(dx)
     if current_room then
         current_room:update(dx)
     end
+
+
+    if love.keyboard.isDown('lctrl') and love.keyboard.isDown('w') then
+        love.event.quit()
+    end
 end
 
 function love.draw()
     if current_room then
         current_room:draw()
-    end
-end
-
-function love.keypressed(key)
-    if key == "f1" then
-        gotoRoom("CircleRoom")
-    end
-
-    if key == "f2" then
-        gotoRoom("RectangleRoom")
-    end
-
-    if key == "f3" then
-        gotoRoom("PolygonRoom")
     end
 end
 
