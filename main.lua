@@ -3,9 +3,11 @@ Timer = require 'libraries/enhanced_timer/EnhancedTimer'
 Camera = require 'libraries/hump/camera'
 Input = require 'libraries/boipushy/Input'
 fn = require 'libraries/moses/moses'
+wf = require 'libraries/windfield'
 
 require 'GameObject'
 require 'utils'
+require 'globals'
 
 function love.load()
     love.graphics.setDefaultFilter("nearest", "nearest")
@@ -22,6 +24,9 @@ function love.load()
     camera = Camera()
 
     current_room = nil
+
+    input:bind('a', 'left')
+    input:bind('d', 'right')
 
     gotoRoom('Stage')
     resize(3)
@@ -67,6 +72,10 @@ function requireFiles(files)
 end
 
 function gotoRoom(room_type, ...)
+    if current_room and current_room.destroy then
+        current_room:destroy()
+    end
+
     current_room = _G[room_type](...)
 end
 
