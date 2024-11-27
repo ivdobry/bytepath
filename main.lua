@@ -30,6 +30,8 @@ function love.load()
 
     input:bind('a', 'left')
     input:bind('d', 'right')
+    input:bind('w', 'up')
+    input:bind('s', 'down')
 
     gotoRoom('Stage')
     resize(3)

@@ -13,10 +13,22 @@ function Player:new(area, x, y, opts)
     self.r = -math.pi / 2
     self.rv = 1.66 * math.pi
     self.v = 0
-    self.max_v = 100
     self.a = 100
 
+    self.base_max_v = 100
+    self.max_v = self.base_max_v
+
+    self.trail_color = skill_point_color
+
+    self.timer:every(0.01, function()
+        self.area:addGameObject('TrailParticle',
+            self.x - self.w * math.cos(self.r), self.y - self.h * math.sin(self.r),
+            { parent = self, r = random(2, 4), d = random(0.15, 0.25), color = getColor(self.trail_color) })
+    end)
+
+
     self.timer:every(0.24, function() self:shoot() end)
+    self.timer:every(5, function() self:tick() end)
 
     input:bind('f4', function() self:die() end)
 end
@@ -33,6 +45,19 @@ function Player:update(dt)
 
     self.v = math.min(self.v + self.a * dt, self.max_v)
     self.collider:setLinearVelocity(self.v * math.cos(self.r), self.v * math.sin(self.r))
+
+    self.max_v = self.base_max_v
+    self.boosting = false
+    if input:down('up') then
+        self.boosting = true
+        self.max_v = 1.5 * self.base_max_v
+    end
+    if input:down('down') then
+        self.boosting = true
+        self.max_v = 0.5 * self.base_max_v
+    end
+    self.trail_color = skill_point_color
+    if self.boosting then self.trail_color = boost_color end
 
     if self.x < 0 then self:die() end
     if self.y < 0 then self:die() end
@@ -66,4 +91,8 @@ function Player:die()
     for i = 1, love.math.random(4, 8) do
         self.area:addGameObject('ExplodeParticle', self.x, self.y)
     end
+end
+
+function Player:tick()
+    self.area:addGameObject('TickEffect', self.x, self.y, { parent = self })
 end
