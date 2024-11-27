@@ -22,8 +22,11 @@ function love.load()
 
     input = Input()
     camera = Camera()
+    timer = Timer()
 
     current_room = nil
+    slow_amount = 1
+    flas_frames = nil
 
     input:bind('a', 'left')
     input:bind('d', 'right')
@@ -32,22 +35,35 @@ function love.load()
     resize(3)
 end
 
-function love.update(dx)
-    camera:update(dx)
+function love.update(dt)
+    camera:update(dt * slow_amount)
+    timer:update(dt * slow_amount)
 
     if current_room then
-        current_room:update(dx)
+        current_room:update(dt)
     end
 
 
     if love.keyboard.isDown('lctrl') and love.keyboard.isDown('w') then
         love.event.quit()
     end
+
+    if current_room then current_room:update(dt * slow_amount) end
 end
 
 function love.draw()
     if current_room then
         current_room:draw()
+    end
+
+    if flash_frames then
+        flash_frames = flash_frames - 1
+        if flash_frames == -1 then flash_frames = nil end
+    end
+    if flash_frames then
+        love.graphics.setColor(getColor(background_color))
+        love.graphics.rectangle('fill', 0, 0, sx * gw, sy * gh)
+        love.graphics.setColor(255, 255, 255)
     end
 end
 
@@ -82,4 +98,13 @@ end
 function resize(s)
     love.window.setMode(s * gw, s * gh)
     sx, sy = s, s
+end
+
+function slow(amount, duration)
+    slow_amount = amount
+    timer:tween('slow', duration, _G, { slow_amount = 1 }, 'in-out-cubic')
+end
+
+function flash(frames)
+    flas_frames = frames
 end

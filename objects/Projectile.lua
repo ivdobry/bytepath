@@ -3,10 +3,10 @@ Projectile = GameObject:extend()
 function Projectile:new(area, x, y, opts)
     Projectile.super.new(self, area, x, y, opts)
 
-    self.size = opts.size or 2.5
+    self.s = opts.s or 2.5
     self.v = opts.v or 200
 
-    self.collider = self.area.world:newCircleCollider(self.x, self.y, self.size)
+    self.collider = self.area.world:newCircleCollider(self.x, self.y, self.s)
     self.collider:setObject(self)
     self.collider:setLinearVelocity(self.v * math.cos(self.r), self.v * math.sin(self.r))
 end
@@ -22,8 +22,8 @@ function Projectile:update(dt)
 end
 
 function Projectile:draw()
-    love.graphics.setColor(hp_color)
-    love.graphics.circle('line', self.x, self.y, self.size)
+    love.graphics.setColor(default_color)
+    love.graphics.circle('line', self.x, self.y, self.s)
 end
 
 function Projectile:destroy()
@@ -33,5 +33,5 @@ end
 function Projectile:die()
     self.dead = true
     self.area:addGameObject('ProjectileDeathEffect', self.x, self.y,
-        { color = hp_color, w = 3 * self.size })
+        { color = hp_color, w = 3 * self.s })
 end
