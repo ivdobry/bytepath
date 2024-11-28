@@ -59,6 +59,10 @@ function Player:new(area, x, y, opts)
                 self.x - 0.9 * self.w * math.cos(self.r) + 0.2 * self.w * math.cos(self.r + math.pi / 2),
                 self.y - 0.9 * self.w * math.sin(self.r) + 0.2 * self.w * math.sin(self.r + math.pi / 2),
                 { parent = self, r = random(2, 4), d = random(0.15, 0.25), color = getColor(self.trail_color) })
+        else
+            self.area:addGameObject('TrailParticle',
+                self.x - self.w * math.cos(self.r), self.y - self.h * math.sin(self.r),
+                { parent = self, r = random(2, 4), d = random(0.15, 0.25), color = getColor(self.trail_color) })
         end
     end)
 
