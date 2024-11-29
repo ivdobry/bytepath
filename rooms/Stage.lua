@@ -8,7 +8,6 @@ function Stage:new()
     self.main_canvas = love.graphics.newCanvas(gw, gh)
 
     self.player = self.area:addGameObject("Player", gw / 2, gh / 2)
-    input:bind("f3", function() self.player.dead = true end)
 end
 
 function Stage:update(dt)
