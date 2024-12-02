@@ -24,8 +24,15 @@ function Projectile:update(dt)
 end
 
 function Projectile:draw()
-    love.graphics.setColor(default_color)
-    love.graphics.circle('line', self.x, self.y, self.s)
+    love.graphics.setColor(getColor(default_color))
+
+    pushRotate(self.x, self.y, Vector(self.collider:getLinearVelocity()):angleTo())
+    love.graphics.setLineWidth(self.s - self.s / 4)
+    love.graphics.line(self.x - 2 * self.s, self.y, self.x, self.y)
+    love.graphics.setColor(getColor(hp_color)) -- change half the projectile line to another color
+    love.graphics.line(self.x, self.y, self.x + 2 * self.s, self.y)
+    love.graphics.setLineWidth(1)
+    love.graphics.pop()
 end
 
 function Projectile:destroy()

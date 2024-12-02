@@ -33,7 +33,7 @@ end
 
 function HP:die()
     self.dead = true
-    self.area:addGameObject('BoostEffect', self.x, self.y,
+    self.area:addGameObject('HPEffect', self.x, self.y,
         { color = hp_color, w = self.w, h = self.h })
 
     self.area:addGameObject('InfoText', self.x, self.y, { text = '+HP', color = hp_color })

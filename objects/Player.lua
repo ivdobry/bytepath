@@ -151,11 +151,14 @@ function Player:update(dt)
 
         if object:is(HP) then
             object:die()
-            self:addHp(25)
+            self:addHP(25)
+        end
+
+        if object:is(SkillPoint) then
+            object:die()
+            self:addSP(1)
         end
     end
-
-    print(self.hp)
 
     if self.x < 0 then self:die() end
     if self.y < 0 then self:die() end
@@ -209,14 +212,23 @@ function Player:tick()
     self.area:addGameObject('TickEffect', self.x, self.y, { parent = self })
 end
 
+---@param amount number
+---@return nil
 function Player:addAmmo(amount)
     self.ammo = math.min(self.ammo + amount, self.max_ammo)
 end
 
+---@param amount number
 function Player:addBoost(amount)
     self.boost = math.min(self.boost + amount, self.max_boost)
 end
 
-function Player:addHp(amount)
+---@param amount number
+function Player:addHP(amount)
     self.hp = math.min(self.hp + amount, self.max_hp)
+end
+
+---@param amount number
+function Player:addSP(amount)
+    skill_point = skill_point + amount
 end
