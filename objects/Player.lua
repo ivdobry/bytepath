@@ -125,8 +125,6 @@ function Player:update(dt)
         self.trail_color = skill_point_color
     end
 
-    print(self.boost)
-
     -- Movement
     if input:down('left') then
         self.r = self.r - self.rv * dt
@@ -143,14 +141,21 @@ function Player:update(dt)
         local object = collision_data.collider:getObject()
         if object:is(Ammo) then
             object:die()
-            Player:addAmmo(5)
+            self:addAmmo(5)
         end
 
         if object:is(Boost) then
             object:die()
+            self:addBoost(25)
+        end
+
+        if object:is(HP) then
+            object:die()
+            self:addHp(25)
         end
     end
 
+    print(self.hp)
 
     if self.x < 0 then self:die() end
     if self.y < 0 then self:die() end
@@ -206,4 +211,12 @@ end
 
 function Player:addAmmo(amount)
     self.ammo = math.min(self.ammo + amount, self.max_ammo)
+end
+
+function Player:addBoost(amount)
+    self.boost = math.min(self.boost + amount, self.max_boost)
+end
+
+function Player:addHp(amount)
+    self.hp = math.min(self.hp + amount, self.max_hp)
 end

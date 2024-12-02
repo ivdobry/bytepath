@@ -10,11 +10,13 @@ Vector = require 'libraries/hump/vector'
 require 'GameObject'
 require 'utils'
 require 'globals'
+require 'libraries/utf8'
 
 function love.load()
     love.graphics.setDefaultFilter('nearest', 'nearest')
     love.graphics.setLineStyle('rough')
 
+    loadFonts('resources/fonts')
     local object_files = {}
     recursiveEnumerate('objects', object_files)
     requireFiles(object_files)
@@ -71,6 +73,8 @@ function love.draw()
     end
 end
 
+-- Load --
+
 function recursiveEnumerate(folder, file_list)
     local items = love.filesystem.getDirectoryItems(folder)
     for _, item in ipairs(items) do
@@ -88,6 +92,21 @@ function requireFiles(files)
     for _, file in ipairs(files) do
         local file = file:sub(1, -5)
         require(file)
+    end
+end
+
+function loadFonts(path)
+    fonts = {}
+    local font_paths = {}
+    recursiveEnumerate(path, font_paths)
+    for i = 8, 16, 1 do
+        for _, font_path in pairs(font_paths) do
+            local last_forward_slash_index = font_path:find("/[^/]*$")
+            local font_name = font_path:sub(last_forward_slash_index + 1, -5)
+            local font = love.graphics.newFont(font_path, i)
+            font:setFilter('nearest', 'nearest')
+            fonts[font_name .. '_' .. i] = font
+        end
     end
 end
 
