@@ -7,7 +7,11 @@ function Stage:new()
     self.timer = Timer()
     self.main_canvas = love.graphics.newCanvas(gw, gh)
 
-    self.player = self.area:addGameObject("Player", gw / 2, gh / 2)
+    self.player = self.area:addGameObject('Player', gw / 2, gh / 2)
+
+    input:bind('p', function()
+        self.area:addGameObject('Ammo', random(0, gw), random(0, gh))
+    end)
 end
 
 function Stage:update(dt)

@@ -4,14 +4,15 @@ Camera = require 'libraries/hump/camera'
 Input = require 'libraries/boipushy/Input'
 fn = require 'libraries/moses/moses'
 wf = require 'libraries/windfield'
+draft = require('libraries/draft/draft')()
 
 require 'GameObject'
 require 'utils'
 require 'globals'
 
 function love.load()
-    love.graphics.setDefaultFilter("nearest", "nearest")
-    love.graphics.setLineStyle("rough")
+    love.graphics.setDefaultFilter('nearest', 'nearest')
+    love.graphics.setLineStyle('rough')
 
     local object_files = {}
     recursiveEnumerate('objects', object_files)
@@ -74,9 +75,9 @@ function recursiveEnumerate(folder, file_list)
     for _, item in ipairs(items) do
         local file = folder .. '/' .. item
         local fileInfo = love.filesystem.getInfo(file)
-        if fileInfo.type == "file" then
+        if fileInfo.type == 'file' then
             table.insert(file_list, file)
-        elseif fileInfo.type == "directory" then
+        elseif fileInfo.type == 'directory' then
             recursiveEnumerate(file, file_list)
         end
     end
