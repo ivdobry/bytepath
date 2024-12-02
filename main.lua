@@ -5,6 +5,7 @@ Input = require 'libraries/boipushy/Input'
 fn = require 'libraries/moses/moses'
 wf = require 'libraries/windfield'
 draft = require('libraries/draft/draft')()
+Vector = require 'libraries/hump/vector'
 
 require 'GameObject'
 require 'utils'
