@@ -174,6 +174,13 @@ function Player:update(dt)
         end
     end
 
+    if self.collider:enter('Enemy') then
+        local collision_data = self.collider:getEnterCollisionData('Enemy')
+        local object = collision_data.collider:getObject()
+
+        self:hit(30)
+    end
+
     if self.x < 0 then self:die() end
     if self.y < 0 then self:die() end
     if self.x > gw then self:die() end
@@ -181,6 +188,8 @@ function Player:update(dt)
 end
 
 function Player:draw()
+    if self.invisible then return end
+
     pushRotate(self.x, self.y, self.r)
     love.graphics.setColor(default_color)
     for _, vertice_group in ipairs(self.polygons) do
@@ -307,6 +316,14 @@ function Player:addHP(amount)
     self.hp = math.min(self.hp + amount, self.max_hp)
 end
 
+function Player:removeHP(amount)
+    self.hp = self.hp - amount
+
+    if self.hp <= 0 then
+        self:die()
+    end
+end
+
 function Player:addSP(amount)
     skill_point = skill_point + amount
 end
@@ -315,4 +332,30 @@ function Player:setAttack(attack)
     self.attack = attack
     self.shoot_cooldown = attacks[attack].cooldown
     self.ammo = self.max_ammo
+end
+
+function Player:hit(damage)
+    damage = damage or 10
+
+    if self.invincible then return end
+
+    if damage >= 30 then
+        self.invincible = true
+        self.timer:after(2, function() self.invincible = false end)
+        for i = 1, math.floor(50) do self.timer:after((i - 1) * 0.04, function() self.invisible = not self.invisible end) end
+        self.timer:after((math.floor(50) + 1) * 0.04, function() self.invisible = false end)
+        camera:shake(6, 60, 0.2)
+        flash(3)
+        slow(0.25, 0.5)
+    else
+        camera:shake(3, 60, 0.1)
+        flash(2)
+        slow(0.25, 0.5)
+    end
+
+    self:removeHP(damage)
+
+    for i = 1, love.math.random(4, 8) do
+        self.area:addGameObject('ExplodeParticle', self.x, self.y)
+    end
 end
