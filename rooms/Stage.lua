@@ -13,7 +13,7 @@ function Stage:new()
     self.player = self.area:addGameObject('Player', gw / 2, gh / 2)
 
     input:bind('p', function()
-        self.area:addGameObject('Boost')
+        self.area:addGameObject('Attack')
     end)
 end
 

@@ -38,7 +38,7 @@ function Player:new(area, x, y, opts)
     self.trail_color = skill_point_color
 
     self.ship = 'Fighter'
-    self:setAttack('Side')
+    self:setAttack('Neutral')
     self.polygons = {}
 
 
@@ -166,6 +166,11 @@ function Player:update(dt)
         if object:is(SkillPoint) then
             object:die()
             self:addSP(1)
+        end
+
+        if object:is(Attack) then
+            object:die()
+            self:setAttack(object.attack)
         end
     end
 
