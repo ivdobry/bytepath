@@ -41,8 +41,8 @@ end
 
 function Attack:die()
     self.dead = true
-    self.area:addGameObject('BoostEffect', self.x, self.y,
-        { color = boost_color, w = self.w, h = self.h })
-
-    self.area:addGameObject('InfoText', self.x, self.y, { text = self.attack, color = boost_color })
+    self.area:addGameObject('AttackEffect', self.x, self.y, { color = default_color, w = 1.1 * self.w, h = 1.1 * self.h })
+    self.area:addGameObject('AttackEffect', self.x, self.y,
+        { color = attacks[self.attack].color, w = 1.3 * self.w, h = 1.3 * self.h })
+    self.area:addGameObject('InfoText', self.x, self.y, { text = self.attack, color = default_color })
 end
