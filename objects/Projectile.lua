@@ -19,6 +19,14 @@ function Projectile:update(dt)
     Projectile.super.update(self, dt)
     self.collider:setLinearVelocity(self.v * math.cos(self.r), self.v * math.sin(self.r))
 
+    if self.collider:enter('Enemy') then
+        local collision_data = self.collider:getEnterCollisionData('Enemy')
+        local object = collision_data.collider:getObject()
+
+        object:hit()
+        self:die()
+    end
+
     if self.x < 0 then self:die() end
     if self.y < 0 then self:die() end
     if self.x > gw then self:die() end

@@ -4,6 +4,7 @@ function Stage:new()
     self.area = Area(self)
     self.area:addPhisicsWorld()
     self.area.world:addCollisionClass('Player')
+    self.area.world:addCollisionClass('Enemy')
     self.area.world:addCollisionClass('Projectile', { ignores = { 'Projectile' } })
     self.area.world:addCollisionClass('Collectable', { ignores = { 'Collectable', 'Projectile' } })
 
@@ -13,7 +14,7 @@ function Stage:new()
     self.player = self.area:addGameObject('Player', gw / 2, gh / 2)
 
     input:bind('p', function()
-        self.area:addGameObject('Attack')
+        self.area:addGameObject('Rock')
     end)
 end
 
