@@ -25,6 +25,8 @@ function Player:new(area, x, y, opts)
 
     self.max_ammo = 100
     self.ammo = self.max_ammo
+    self.shoot_timer = 0
+    self.shoot_cooldown = 0.24
 
     self.max_boost = 100
     self.boost = self.max_boost
@@ -32,9 +34,11 @@ function Player:new(area, x, y, opts)
     self.boost_timer = 0
     self.boost_cooldown = 2
 
+
     self.trail_color = skill_point_color
 
     self.ship = 'Fighter'
+    self:setAttack('Side')
     self.polygons = {}
 
 
@@ -82,7 +86,6 @@ function Player:new(area, x, y, opts)
         end
     end)
 
-    self.timer:every(0.24, function() self:shoot() end)
     self.timer:every(5, function() self:tick() end)
 
     input:bind('f4', function() self:die() end)
@@ -90,6 +93,13 @@ end
 
 function Player:update(dt)
     Player.super.update(self, dt)
+
+    -- Shoot
+    self.shoot_timer = self.shoot_timer + dt
+    if self.shoot_timer > self.shoot_cooldown then
+        self.shoot_timer = 0
+        self:shoot()
+    end
 
     -- Boost
     self.boost = math.min(self.boost + 10 * dt, self.max_boost)
@@ -117,7 +127,6 @@ function Player:update(dt)
             self.boost_timer = 0
         end
     end
-
 
     if self.boosting then
         self.trail_color = boost_color
@@ -188,12 +197,81 @@ end
 function Player:shoot()
     local d = 1.2 * self.w
 
-    self.area:addGameObject('ShootEffect', self.x + d * math.cos(self.r),
-        self.y + d * math.sin(self.r), { player = self, d = d })
+    self.area:addGameObject('ShootEffect',
+        self.x + d * math.cos(self.r), self.y + d * math.sin(self.r), { player = self, d = d })
 
-    self.area:addGameObject('Projectile',
-        self.x + 1.5 * d * math.cos(self.r),
-        self.y + 1.5 * d * math.sin(self.r), { r = self.r })
+    if self.attack == 'Neutral' then
+        self.area:addGameObject('Projectile',
+            self.x + 1.5 * d * math.cos(self.r),
+            self.y + 1.5 * d * math.sin(self.r),
+            { r = self.r, attack = self.attack })
+    elseif self.attack == 'Double' then
+        self.ammo = self.ammo - attacks[self.attack].ammo
+        self.area:addGameObject('Projectile',
+            self.x + 1.5 * d * math.cos(self.r + math.pi / 12),
+            self.y + 1.5 * d * math.sin(self.r + math.pi / 12),
+            { r = self.r + math.pi / 12, attack = self.attack })
+        self.area:addGameObject('Projectile',
+            self.x + 1.5 * d * math.cos(self.r - math.pi / 12),
+            self.y + 1.5 * d * math.sin(self.r - math.pi / 12),
+            { r = self.r - math.pi / 12, attack = self.attack })
+    elseif self.attack == 'Triple' then
+        self.ammo = self.ammo - attacks[self.attack].ammo
+        self.area:addGameObject('Projectile',
+            self.x + 1.5 * d * math.cos(self.r + math.pi / 12),
+            self.y + 1.5 * d * math.sin(self.r + math.pi / 12),
+            { r = self.r + math.pi / 12, attack = self.attack })
+        self.area:addGameObject('Projectile',
+            self.x + 1.5 * d * math.cos(self.r),
+            self.y + 1.5 * d * math.sin(self.r),
+            { r = self.r, attack = self.attack })
+        self.area:addGameObject('Projectile',
+            self.x + 1.5 * d * math.cos(self.r - math.pi / 12),
+            self.y + 1.5 * d * math.sin(self.r - math.pi / 12),
+            { r = self.r - math.pi / 12, attack = self.attack })
+    elseif self.attack == 'Rapid' then
+        self.ammo = self.ammo - attacks[self.attack].ammo
+        self.area:addGameObject('Projectile',
+            self.x + 1.5 * d * math.cos(self.r),
+            self.y + 1.5 * d * math.sin(self.r),
+            { r = self.r, attack = self.attack })
+    elseif self.attack == 'Spread' then
+        self.ammo = self.ammo - attacks[self.attack].ammo
+        local random_angle = random(-math.pi / 8, math.pi / 8)
+        self.area:addGameObject('Projectile',
+            self.x + 1.5 * d * math.cos(self.r + random_angle),
+            self.y + 1.5 * d * math.sin(self.r + random_angle),
+            { r = self.r + random_angle, attack = self.attack })
+    elseif self.attack == 'Back' then
+        self.ammo = self.ammo - attacks[self.attack].ammo
+        self.area:addGameObject('Projectile',
+            self.x + 1.5 * d * math.cos(self.r),
+            self.y + 1.5 * d * math.sin(self.r),
+            { r = self.r, attack = self.attack })
+        self.area:addGameObject('Projectile',
+            self.x + 1.5 * d * math.cos(self.r - math.pi),
+            self.y + 1.5 * d * math.sin(self.r - math.pi),
+            { r = self.r - math.pi, attack = self.attack })
+    elseif self.attack == 'Side' then
+        self.ammo = self.ammo - attacks[self.attack].ammo
+        self.area:addGameObject('Projectile',
+            self.x + 1.5 * d * math.cos(self.r),
+            self.y + 1.5 * d * math.sin(self.r),
+            { r = self.r, attack = self.attack })
+        self.area:addGameObject('Projectile',
+            self.x + 1.5 * d * math.cos(self.r - math.pi / 2),
+            self.y + 1.5 * d * math.sin(self.r - math.pi / 2),
+            { r = self.r - math.pi / 2, attack = self.attack })
+        self.area:addGameObject('Projectile',
+            self.x + 1.5 * d * math.cos(self.r + math.pi / 2),
+            self.y + 1.5 * d * math.sin(self.r + math.pi / 2),
+            { r = self.r + math.pi / 2, attack = self.attack })
+    end
+
+    if self.ammo <= 0 then
+        self:setAttack('Neutral')
+        self.ammo = self.max_ammo
+    end
 end
 
 function Player:die()
@@ -212,23 +290,24 @@ function Player:tick()
     self.area:addGameObject('TickEffect', self.x, self.y, { parent = self })
 end
 
----@param amount number
----@return nil
 function Player:addAmmo(amount)
     self.ammo = math.min(self.ammo + amount, self.max_ammo)
 end
 
----@param amount number
 function Player:addBoost(amount)
     self.boost = math.min(self.boost + amount, self.max_boost)
 end
 
----@param amount number
 function Player:addHP(amount)
     self.hp = math.min(self.hp + amount, self.max_hp)
 end
 
----@param amount number
 function Player:addSP(amount)
     skill_point = skill_point + amount
+end
+
+function Player:setAttack(attack)
+    self.attack = attack
+    self.shoot_cooldown = attacks[attack].cooldown
+    self.ammo = self.max_ammo
 end
